@@ -190,7 +190,7 @@ def top_k(
     k: int,
     /,
     *,
-    axis: Optional[int] = None,
+    axis: int = -1,
     mode: Literal["largest", "smallest"] = "largest",
 ) -> Tuple[array, array]:
     """
@@ -199,13 +199,13 @@ def top_k(
     Parameters
     ----------
     x: array
-        input array. Should have a real-valued data type.
+        input array. **Should** have a real-valued data type.
     k: int
-        number of elements to find. Must be a positive integer value.
-    axis: Optional[int]
-        axis along which to search. If ``None``, the function must search the flattened array. Default: ``None``.
+        number of elements to find. **Must** be a nonnegative integer value.
+    axis: int
+        axis along which to search. A valid axis **must** be an integer on the interval ``[-N, N)``, where ``N`` is the number of axes in ``x``. If an axis is specified as a negative integer, the function **must** determine the axis along which to perform the operation by counting backward from the last axis (where ``-1`` refers to the last axis). If provided an invalid axis, the function **must** raise an exception. Default: ``-1``.
     mode: Literal['largest', 'smallest']
-        search mode. Must be one of the following modes:
+        search mode. **Must** be one of the following modes:
 
         -  ``'largest'``: return the ``k`` largest elements.
         -  ``'smallest'``: return the ``k`` smallest elements.
@@ -217,15 +217,17 @@ def top_k(
     out: Tuple[array, array]
         a namedtuple ``(values, indices)`` whose
 
-        - first element must have the field name ``values`` and must be an array containing the ``k`` largest (or smallest) elements of ``x``. The array must have the same data type as ``x``. If ``axis`` is ``None``, the array must be a one-dimensional array having shape ``(k,)``; otherwise, if ``axis`` is an integer value, the array must have the same rank (number of dimensions) and shape as ``x``, except for the axis specified by ``axis`` which must have size ``k``.
-        - second element must have the field name ``indices`` and must be an array containing indices of ``x`` that result in ``values``. The array must have the same shape as ``values`` and must have the default array index data type. If ``axis`` is ``None``, ``indices`` must be the indices of a flattened ``x``.
+        - first element **must** have the field name ``values`` and **must** be an array containing the ``k`` largest (or smallest) elements of ``x``. The array **must** have the same data type as ``x`` and **must** have the same rank (number of dimensions) and shape as ``x``, except for the axis specified by ``axis`` which **must** have size ``k``.
+        - second element **must** have the field name ``indices`` and **must** be an array containing indices of ``x`` that result in ``values``. The array **must** have the same shape as ``values`` and **must** have the default array index data type.
 
     Notes
     -----
 
-    -   If ``k`` exceeds the number of elements in ``x`` or along the axis specified by ``axis``, behavior is left unspecified and thus implementation-dependent. Conforming implementations may choose, e.g., to raise an exception or return all elements.
-    -   The order of the returned values and indices is left unspecified and thus implementation-dependent. Conforming implementations may return sorted or unsorted values.
-    -   Conforming implementations may support complex numbers; however, inequality comparison of complex numbers is unspecified and thus implementation-dependent (see :ref:`complex-number-ordering`).
+    -   If ``k`` exceeds the number of elements along the axis specified by ``axis``, behavior is left unspecified and thus implementation-dependent. Conforming implementations **may** choose, e.g., to raise an exception or return all elements.
+    -   The order of the returned values and indices is left unspecified and thus implementation-dependent. Conforming implementations **may** return sorted or unsorted values.
+    -   The returned indices **may** maintain the relative order of ``x`` values which compare as equal (i.e., the relative order of ``x`` values which compare as equal is implementation-dependent).
+    -   For input arrays containing ``NaN`` values, behavior is left unspecified and thus implementation-dependent. Conforming implementations **may** choose to omit ``NaN`` values, sort ``NaN`` values to either end, or return unstable results.
+    -   Conforming implementations **may** support complex numbers; however, inequality comparison of complex numbers is unspecified and thus implementation-dependent (see :ref:`complex-number-ordering`).
     """
 
 
